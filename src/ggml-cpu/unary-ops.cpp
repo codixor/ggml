@@ -78,7 +78,7 @@ static inline float op_expm1(float x) {
 }
 
 static inline float op_softplus(float x) {
-    return (x > 20.0f) ? x : log1pf(expf(x));
+    return (x > 20.0f) ? x : logf(1.0f + expf(x));
 }
 
 static inline float op_floor(float x) {
@@ -95,6 +95,10 @@ static inline float op_round(float x) {
 
 static inline float op_trunc(float x) {
     return truncf(x);
+}
+
+static inline float op_round_bf16(float x) {
+    return bf16_to_f32(f32_to_bf16(x));
 }
 
 template <float (*op)(float), typename src0_t, typename dst_t>
@@ -320,6 +324,10 @@ void ggml_compute_forward_round(const ggml_compute_params * params, ggml_tensor 
 
 void ggml_compute_forward_trunc(const ggml_compute_params * params, ggml_tensor * dst) {
     unary_op<op_trunc>(params, dst);
+}
+
+void ggml_compute_forward_round_bf16(const ggml_compute_params * params, ggml_tensor * dst) {
+    unary_op<op_round_bf16>(params, dst);
 }
 
 void ggml_compute_forward_xielu(const ggml_compute_params * params, ggml_tensor * dst) {
